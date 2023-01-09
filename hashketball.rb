@@ -126,4 +126,113 @@ def game_hash
   }
 end
 
-# Write code here
+# returns number of points scored by a given player
+def num_points_scored name
+  get_player_by_name(name).each do |key, value|
+    return value if key==:points
+  end
+end
+
+# returns the shoe size of a given player
+def shoe_size name
+  get_player_by_name(name).each do |key, value|
+    return value if key==:shoe
+  end
+end
+
+# returns the colors of a given team
+def team_colors team_name
+  game_hash.each do |team, data|
+    if data[:team_name] == team_name
+      team_we_want = data
+      return team_we_want[:colors]
+    end
+  end
+end
+
+# returns the names of the teams
+def team_names
+  names_array = []
+  game_hash.each do |team, data|
+    names_array << data[:team_name]
+  end
+  names_array
+end
+
+def player_numbers team_name
+  jersey_numbers_array = []
+  game_hash.each do |team, team_data|
+    if team_data[:team_name] == team_name
+      team_data.find do |key, value|
+        if key == :players
+          value.each do |player, player_data|
+            player.each do |key, value|
+              jersey_numbers_array << value if key == :number
+            end
+          end
+        end
+      end
+    end
+  end
+  pp jersey_numbers_array
+end
+
+# get a players full stats by name
+def player_stats name
+  game_hash.each do |team, data|
+    data.each do |key, value|
+      if key == :players
+        value.each do |player|
+          return player if player[:player_name] == name
+        end
+      end
+    end
+  end
+end
+
+# get the number of rebounds from the player with the biggest shoe size
+def big_shoe_rebounds
+  all_players = get_all_players
+  biggest_shoe = all_players[0]
+  all_players.each do |player|
+    biggest_shoe = player if shoe_size(get_player_name(player)) > shoe_size(get_player_name(biggest_shoe))   
+  end
+  get_rebounds biggest_shoe
+end
+
+# ----------------------------------------------------------helper functions-------------------------------------------------------------------- #
+
+def get_player_by_name name
+  get_all_players.each do |player|
+    player.each do |key, value|
+      return player if key==:player_name && value==name
+    end
+  end
+end
+
+def get_all_players
+  players = []
+  game_hash.each do |location, team_data|
+    team_data.each do |key, value|
+      if key == :players
+        value.each do |player, player_data|
+          players << player
+        end   
+      end     
+    end
+  end
+  players
+end
+
+def get_player_name player
+  player.each do |key, value|
+    return value if key==:player_name
+  end
+end
+
+def get_rebounds player
+  player.each do |key, value|
+    return value if key==:rebounds
+  end
+end
+
